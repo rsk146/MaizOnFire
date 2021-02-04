@@ -5,12 +5,18 @@ import sys
 import random
 
 #colors
-BLACK = (0,0,0)
-WHITE = (255, 255, 255)
+WHITE = (255, 255, 255) #Free = 0
+BLACK = (0,0,0)         #Walls = 1
+BLUE = (0, 0, 255)      #Player = 2
+RED = (255, 0, 0)       #Goal = 3
+L_GREEN = (0, 100, 0)   #In Fringe = 4
+GREEN = (0, 255, 0)     #Visited = 5
+YELLOW = (0, 255, 255)  #Fire = 6
 
-dim = sys.argv[1]
+#dim = sys.argv[1]
 dim = 28
-p = sys.argv[2]
+#p = sys.argv[2]
+p = 0.2
 
 #figure out proper scaling
 height =20 
@@ -19,11 +25,19 @@ margin = 5
 
 #show maze
 def display_Maze(grid):
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            sys.exit(0)
+
     for row in range(28):
             for column in range(28):
                 color = WHITE
                 if grid[row][column] == 1:
                     color = BLACK
+                elif grid[row][column] == 2:
+                    color = BLUE
+                elif grid[row][column] == 3:
+                    color = RED
                 pygame.draw.rect(screen, color, [(margin + width) * column + margin,
                                                  (margin+ height) * row + margin,
                                                  width, height])
@@ -38,7 +52,8 @@ for row in range(dim):
             grid[row].append(1)
         else:
             grid[row].append(0)
-
+grid[0][0] = 2
+grid[dim-1][dim-1] = 3
 
 pygame.init()
 
@@ -48,15 +63,7 @@ pygame.display.set_caption("MaizOnFire")
 clock = pygame.time.Clock()
 done = False
 
+print("in loop")
 while not done:
-    for row in range(28):
-            for column in range(28):
-                color = WHITE
-                if grid[row][column] == 1:
-                    color = BLACK
-                pygame.draw.rect(screen, color, [(margin + width) * column + margin,
-                                                 (margin+ height) * row + margin,
-                                                 width, height])
-    clock.tick(60)
-    pygame.display.flip()
+    display_Maze(grid)
 
