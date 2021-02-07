@@ -4,6 +4,9 @@ import os
 import sys
 import random
 from collections import deque
+from queue import PriorityQueue
+from math import sqrt
+import math
 
 #colors
 WHITE = (255, 255, 255) #Free = 0
@@ -48,7 +51,7 @@ def display_Maze(grid):
                 pygame.draw.rect(screen, color, [(margin + width) * column + margin,
                                                  (margin+ height) * row + margin,
                                                  width, height])
-    clock.tick(25)
+    clock.tick(1)
     pygame.display.flip()
 
 #dfs
@@ -124,37 +127,53 @@ def bfs(grid):
     return False
 
 
-#Not finished
+#Uses Euclidean distance as heuristic
 def a_star(grid):
-    fringe = deque()
-    fringe.append((0,0))
+    fringe = PriorityQueue()
+    beginning = (dim-1) * sqrt(2)
+    #(current cost+heuristic, current cost, x, y)
+    fringe.put((beginning, 0, 0, 0))
     closed_set = set()
     parent = None
-    while fringe:
-        current = fringe.popleft()
+    while not fringe.empty():
 
-        if current == (dim-1, dim-1):
+        current = fringe.get()
+        print(current)
+
+        if current[2] == dim-1 and current[3] == dim-1:
             print("Goal Reached")
-            grid[current[0]][current[1]] = 7
+            grid[current[2]][current[3]] = 7
             return True
         else:
-            if current not in closed_set:
+            if (current[2],current[3]) not in closed_set:
+        
                 if parent is not None: 
-                    grid[parent[0]][parent[1]] = 5
-                if(current[0] -1 >=0 and grid[current[0]-1][current[1]] != 1 and (current[0]-1, current[1]) not in closed_set):
-                    fringe.append((current[0]-1, current[1]))
-                    grid[current[0]-1][current[1]] = 4
-                if(current[1] -1 >=0 and grid[current[0]][current[1]-1] != 1 and (current[0], current[1]-1) not in closed_set):
-                    fringe.append((current[0], current[1]-1))
-                    grid[current[0]][current[1]-1] = 4
-                if(current[0] +1 < dim and grid[current[0]+1][current[1]] != 1 and (current[0]+1, current[1]) not in closed_set):
-                    fringe.append((current[0]+1, current[1]))
-                    grid[current[0]+1][current[1]] = 4
-                if(current[1] +1 < dim and grid[current[0]][current[1]+1] != 1) and (current[0], current[1]+1) not in closed_set:
-                    fringe.append((current[0], current[1]+1))
-                    grid[current[0]][current[1]+1] = 4
-                closed_set.add(current)
-                grid[current[0]][current[1]] = 2
+                    grid[parent[2]][parent[3]] = 5
+
+                #Heuristic is calculated wrong. We calculated distance away from start rather than distance to the end
+                
+                if(current[2] -1 >=0 and grid[current[2]-1][current[3]] != 1 and (current[2]-1, current[3]) not in closed_set):
+                    h = sqrt((current[2]-1)**2 + current[3]**2)
+                    fringe.put((current[1] + 1 + h,current[1]+1,current[2]-1, current[3]))
+                    grid[current[2]-1][current[3]] = 4
+
+                if(current[3] -1 >=0 and grid[current[2]][current[3]-1] != 1 and (current[2], current[3]-1) not in closed_set):
+                    h = sqrt((current[2])**2 + (current[3]-1)**2)
+                    fringe.put((current[1] + 1 + h,current[1]+1,current[2]-1, current[3]))
+                    grid[current[2]][current[3]-1] = 4
+
+                if(current[2] +1 < dim and grid[current[2]+1][current[3]] != 1 and (current[2]+1, current[3]) not in closed_set):
+                    h = sqrt((current[2]+1)**2 + current[3]**2)
+                    fringe.put((current[1] + 1 + h,current[1]+1,current[2]-1, current[3]))
+                    grid[current[2]+1][current[3]] = 4
+
+                if(current[3] +1 < dim and grid[current[2]][current[3]+1] != 1) and (current[2], current[3]+1) not in closed_set:
+                    h = sqrt((current[2])**2 + (current[3]+1)**2)
+                    fringe.put((current[1] + 1 + h,current[1]+1,current[2]-1, current[3]))
+                    grid[current[2]][current[3]+1] = 4
+
+                closed_set.add((current[2], current[3]))
+                grid[current[2]][current[3]] = 2
                 parent = current
         display_Maze(grid)
     
@@ -181,7 +200,7 @@ pygame.display.set_caption("MaizOnFire")
 clock = pygame.time.Clock()
 done = False
 
-if bfs(grid):
+if a_star(grid):
     print("Found goal")
     while not done:
         display_Maze(grid)
