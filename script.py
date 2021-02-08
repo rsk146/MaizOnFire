@@ -51,7 +51,7 @@ def display_Maze(grid):
                 pygame.draw.rect(screen, color, [(margin + width) * column + margin,
                                                  (margin+ height) * row + margin,
                                                  width, height])
-    clock.tick(1)
+    clock.tick(60)
     pygame.display.flip()
 
 #dfs
@@ -135,11 +135,12 @@ def a_star(grid):
     fringe.put((beginning, 0, 0, 0))
     closed_set = set()
     parent = None
+    h = 0
     while not fringe.empty():
 
         current = fringe.get()
         print(current)
-
+        print(h)
         if current[2] == dim-1 and current[3] == dim-1:
             print("Goal Reached")
             grid[current[2]][current[3]] = 7
@@ -153,23 +154,23 @@ def a_star(grid):
                 #Heuristic is calculated wrong. We calculated distance away from start rather than distance to the end
                 
                 if(current[2] -1 >=0 and grid[current[2]-1][current[3]] != 1 and (current[2]-1, current[3]) not in closed_set):
-                    h = sqrt((current[2]-1)**2 + current[3]**2)
+                    h = sqrt((dim - current[2])**2 + (dim - current[3]-1)**2)
                     fringe.put((current[1] + 1 + h,current[1]+1,current[2]-1, current[3]))
                     grid[current[2]-1][current[3]] = 4
 
                 if(current[3] -1 >=0 and grid[current[2]][current[3]-1] != 1 and (current[2], current[3]-1) not in closed_set):
-                    h = sqrt((current[2])**2 + (current[3]-1)**2)
-                    fringe.put((current[1] + 1 + h,current[1]+1,current[2]-1, current[3]))
+                    h = sqrt((dim - current[2] - 1)**2 + (dim - current[3])**2)
+                    fringe.put((current[1] + 1 + h,current[1]+1,current[2], current[3]-1))
                     grid[current[2]][current[3]-1] = 4
 
                 if(current[2] +1 < dim and grid[current[2]+1][current[3]] != 1 and (current[2]+1, current[3]) not in closed_set):
-                    h = sqrt((current[2]+1)**2 + current[3]**2)
-                    fringe.put((current[1] + 1 + h,current[1]+1,current[2]-1, current[3]))
+                    h = sqrt((dim - 2 - current[2])**2 + (dim - current[3]-1)**2)
+                    fringe.put((current[1] + 1 + h,current[1]+1,current[2]+1, current[3]))
                     grid[current[2]+1][current[3]] = 4
 
                 if(current[3] +1 < dim and grid[current[2]][current[3]+1] != 1) and (current[2], current[3]+1) not in closed_set:
-                    h = sqrt((current[2])**2 + (current[3]+1)**2)
-                    fringe.put((current[1] + 1 + h,current[1]+1,current[2]-1, current[3]))
+                    h = sqrt((dim - current[2]-1)**2 + (dim - current[3] - 2)**2)
+                    fringe.put((current[1] + 1 + h,current[1]+1,current[2], current[3]+1))
                     grid[current[2]][current[3]+1] = 4
 
                 closed_set.add((current[2], current[3]))
