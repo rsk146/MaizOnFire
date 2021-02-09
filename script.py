@@ -124,8 +124,8 @@ def dfs(grid):
                     #If next node is already in fringe, then there was a shorter path to that node, don't overwrite
                     if(nextNode not in fringe):
                         parentGrid[nextX][nextY] = current
-                    fringe.append(nextNode)
-                    grid[nextX][nextY] = Status.FRINGE
+                        fringe.append(nextNode)
+                        grid[nextX][nextY] = Status.FRINGE
             
 
         #We are done with this node since we've checked all neighbors
