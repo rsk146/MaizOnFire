@@ -27,7 +27,7 @@ BLUE = (0, 0, 255)      #Player
 RED = (255, 0, 0)       #Goal 
 GREEN = (0, 100, 0)     #In Fringe 
 L_GREEN = (0, 255, 0)   #Visited 
-YELLOW = (0, 255, 255)  #Fire 
+YELLOW = (255, 255, 0)  #Fire 
 PURPLE = (255,0,255)    #Parent 
 
 pygame.init()
@@ -212,7 +212,6 @@ def bfs(grid, startX, startY, endX, endY):
     
     return False
 
-
 #Uses Euclidean distance as heuristic
 def a_star(grid, startX, startY, endX, endY):
     startStatus = grid[startX][startY]
@@ -276,7 +275,8 @@ def a_star(grid, startX, startY, endX, endY):
 
         #We are done with this node since we've checked all neighbors
         closed_set.add((curX, curY))
-        grid[curX][curY] = Status.VISITED
+        if(curX != startX or curY != startY):
+            grid[curX][curY] = Status.VISITED
         display_Maze(grid)
     
     print("Goal not reached")
@@ -314,3 +314,9 @@ def a_star(grid, startX, startY, endX, endY):
     #     display_Maze(grid)
     
     # 
+
+
+
+def uselessfunction():
+    return
+

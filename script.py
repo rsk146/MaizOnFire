@@ -18,6 +18,11 @@ import time
 #  
 #   WHY DO WE EVEN HAVE A CLOSED SET WHEN WE CAN JUST CHECK THE SQUARE COLOR?
 #
+#   -Add check to see if there is a path from fire to player
+#   -Maybe add another color to show path that player has taken already
+#   -I think the fire is spreading way too fast? Check q and calculations
+#
+#
 ###################
 
 
@@ -38,42 +43,165 @@ def generate_Maze():
 def clear_Search(grid):
     for row in range(dim):
         for col in range(dim):
-            clear = grid[row][col] == sa.Status.VISITED or grid[row][col] == sa.Status.FRINGE or grid[row][col] == sa.Status.PATH
+            clear = grid[row][col] == sa.Status.VISITED or grid[row][col] == sa.Status.FRINGE
 
             if(clear):
                 grid[row][col] = sa.Status.FREE 
+def clear_Path(grid):
+    for row in range(dim):
+        for col in range(dim):
+            if(grid[row][col] == sa.Status.PATH):
+                grid[row][col] = sa.Status.FREE
 
+def add_valid_fire(grid):
+    valid = False
+    
+    while not valid:
+        fireX = int(random.uniform(0, dim-1))
+        fireY = int(random.uniform(0, dim-1))
 
+        #make sure fire not on player or exit
+        if((fireX != 0 or fireY != 0) and (fireX != dim-1 or fireY !=dim-1)):
+            valid = True
+
+        #Eventually Add check to see if there is path from fire to player!!
+
+    grid[fireX][fireY] = sa.Status.FIRE
+
+def spread_fire(grid):
+    oldGrid = grid.copy()
+    for row in range(dim):
+        for col in range(dim):
+            if(oldGrid[row][col] == sa.Status.FIRE or oldGrid[row][col] == sa.Status.WALL):
+                continue
+
+            adjFire = count_fire(oldGrid, row, col)
+            pFire = 1 - (1-q)**adjFire
+            if(random.uniform(0.,1.) < pFire):
+                grid[row][col] = sa.Status.FIRE
+
+def count_fire(oldGrid, row, col):
+    count = 0
+    for i in range(3):
+        for j in range(3):
+            rowCheck = row - 1 + i
+            colCheck = col - 1 + j
+            if(rowCheck >=0 and rowCheck < dim and colCheck >= 0 and colCheck < dim):
+                if(oldGrid[rowCheck][colCheck] == sa.Status.FIRE):
+                    count = count + 1
+    return count
+
+def performStrategyOne(grid):
+    playerX = 0
+    playerY = 0
+    
+    if(not sa.a_star(grid, 0, 0, dim-1, dim -1)):
+        print("Not possible to escape the maiz")
+        return False
+    
+    clear_Search(grid)
+    sa.display_Maze(grid)
+    time.sleep(0.5)
+
+    while (playerX,playerY) != (dim-1, dim-1):
+        (playerX, playerY) = path_step(grid, playerX, playerY)
+        spread_fire(grid)
+        sa.display_Maze(grid)
+        if(grid[playerX][playerY] == sa.Status.FIRE):
+            print("Player died to fire")
+            return False
+        
+        time.sleep(0.3)
+    
+    print("Player escaped the MaizOfFire")
+    return True
+
+def performStrategyTwo(grid):
+    playerX = 0
+    playerY = 0
+    
+    if(not sa.a_star(grid, 0, 0, dim-1, dim -1)):
+        print("Not possible to escape the maiz")
+        return False
+    
+    clear_Search(grid)
+
+    while (playerX,playerY) != (dim-1, dim-1):
+        sa.display_Maze(grid)
+        time.sleep(0.3)
+        clear_Search(grid)
+        (playerX, playerY) = path_step(grid, playerX, playerY)
+        clear_Path(grid)
+        spread_fire(grid)
+        if(grid[playerX][playerY] == sa.Status.FIRE):
+            print("Player died to fire")
+            return False
+        
+        if(not sa.a_star(grid, playerX, playerY, dim-1, dim-1)):
+            print("It is no longer possible to escape the maiz")
+            return False
+        
+    
+    print("Player escaped the MaizOfFire")
+    return True
+
+def path_step(grid, row, col):
+    #Copy pasted from Fire checker cuz im lazy to check 4 nodes
+    for i in range(3):
+        for j in range(3):
+            rowCheck = row - 1 + i
+            colCheck = col - 1 + j
+            if(rowCheck >=0 and rowCheck < dim and colCheck >= 0 and colCheck < dim):
+                if(grid[rowCheck][colCheck] == sa.Status.PATH or grid[rowCheck][colCheck] == sa.Status.GOAL):
+                    grid[row][col] = sa.Status.FREE
+                    grid[rowCheck][colCheck] = sa.Status.PLAYER
+                    return (rowCheck,colCheck)
+
+    return (row,col)
 
 
 
 dim = int(sys.argv[1])
 p = float(sys.argv[2])
 
-#main
+fireActive = len(sys.argv) == 4
+
+if(fireActive):
+    q = float(sys.argv[3])
+else:
+    q = 0
+
 
 grid = generate_Maze()
-
+if(fireActive):
+    add_valid_fire(grid)
 
 done = False
 
-if sa.dfs(grid, 0,0,dim-1,dim-1):
-    print("Found goal, performing bfs")
+performStrategyTwo(grid)
+while not done:
     sa.display_Maze(grid)
-    time.sleep(1)
-    clear_Search(grid)
-    sa.bfs(grid, 0,0, dim-1, dim-1)
-    print("Found goal, performing A*")
-    sa.display_Maze(grid)
-    time.sleep(1)
-    clear_Search(grid)
-    sa.a_star(grid, 0, 0, dim-1, dim-1)
-    print("Done!")
-    while not done:
-        sa.display_Maze(grid)
-else:
-    print("Failure")
-    while not done:
-        sa.display_Maze(grid)
+#For Raky if you want to see all of the algos
+#
+# if sa.dfs(grid, 0,0,dim-1,dim-1):
+#     print("Found goal, performing bfs")
+#     sa.display_Maze(grid)
+#     time.sleep(1)
+#     clear_Search(grid)
+#     clear_Path(grid)
+#     sa.bfs(grid, 0,0, dim-1, dim-1)
+#     print("Found goal, performing A*")
+#     sa.display_Maze(grid)
+#     time.sleep(1)
+#     clear_Search(grid)
+#     clear_Path(grid)
+#     sa.a_star(grid, 0, 0, dim-1, dim-1)
+#     print("Done!")
+#     while not done:
+#         sa.display_Maze(grid)
+# else:
+#     print("Failure")
+#     while not done:
+#         sa.display_Maze(grid)
 
 
