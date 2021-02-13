@@ -10,6 +10,7 @@ from math import sqrt
 import math
 from enum import Enum
 import time
+import copy
 
 ################## TO DO
 #
@@ -20,7 +21,7 @@ import time
 #
 #   -Add check to see if there is a path from fire to player
 #   -Maybe add another color to show path that player has taken already
-#   -I think the fire is spreading way too fast? Check q and calculations
+#  
 #
 #
 ###################
@@ -69,7 +70,7 @@ def add_valid_fire(grid):
     grid[fireX][fireY] = sa.Status.FIRE
 
 def spread_fire(grid):
-    oldGrid = grid.copy()
+    oldGrid = copy.deepcopy(grid)
     for row in range(dim):
         for col in range(dim):
             if(oldGrid[row][col] == sa.Status.FIRE or oldGrid[row][col] == sa.Status.WALL):
@@ -82,10 +83,14 @@ def spread_fire(grid):
 
 def count_fire(oldGrid, row, col):
     count = 0
-    for i in range(3):
-        for j in range(3):
-            rowCheck = row - 1 + i
-            colCheck = col - 1 + j
+    for i in range(2):
+        for j in range(-1,2,2):
+            if i == 0:
+                rowCheck = row
+                colCheck = col + j
+            else:
+                colCheck = col
+                rowCheck = row + j
             if(rowCheck >=0 and rowCheck < dim and colCheck >= 0 and colCheck < dim):
                 if(oldGrid[rowCheck][colCheck] == sa.Status.FIRE):
                     count = count + 1
@@ -147,10 +152,14 @@ def performStrategyTwo(grid):
 
 def path_step(grid, row, col):
     #Copy pasted from Fire checker cuz im lazy to check 4 nodes
-    for i in range(3):
-        for j in range(3):
-            rowCheck = row - 1 + i
-            colCheck = col - 1 + j
+    for i in range(2):
+        for j in range(-1,2,2):
+            if i == 0:
+                rowCheck = row
+                colCheck = col + j
+            else:
+                colCheck = col
+                rowCheck = row + j
             if(rowCheck >=0 and rowCheck < dim and colCheck >= 0 and colCheck < dim):
                 if(grid[rowCheck][colCheck] == sa.Status.PATH or grid[rowCheck][colCheck] == sa.Status.GOAL):
                     grid[row][col] = sa.Status.FREE
@@ -158,8 +167,6 @@ def path_step(grid, row, col):
                     return (rowCheck,colCheck)
 
     return (row,col)
-
-
 
 dim = int(sys.argv[1])
 p = float(sys.argv[2])
@@ -181,27 +188,28 @@ done = False
 performStrategyTwo(grid)
 while not done:
     sa.display_Maze(grid)
-#For Raky if you want to see all of the algos
-#
-# if sa.dfs(grid, 0,0,dim-1,dim-1):
-#     print("Found goal, performing bfs")
-#     sa.display_Maze(grid)
-#     time.sleep(1)
-#     clear_Search(grid)
-#     clear_Path(grid)
-#     sa.bfs(grid, 0,0, dim-1, dim-1)
-#     print("Found goal, performing A*")
-#     sa.display_Maze(grid)
-#     time.sleep(1)
-#     clear_Search(grid)
-#     clear_Path(grid)
-#     sa.a_star(grid, 0, 0, dim-1, dim-1)
-#     print("Done!")
-#     while not done:
-#         sa.display_Maze(grid)
-# else:
-#     print("Failure")
-#     while not done:
-#         sa.display_Maze(grid)
 
+#For Raky if you want to see all of the algos
+'''
+if sa.dfs(grid, 0,0,dim-1,dim-1):
+    print("Found goal, performing bfs")
+    sa.display_Maze(grid)
+    time.sleep(1)
+    clear_Search(grid)
+    clear_Path(grid)
+    sa.bfs(grid, 0,0, dim-1, dim-1)
+    print("Found goal, performing A*")
+    sa.display_Maze(grid)
+    time.sleep(1)
+    clear_Search(grid)
+    clear_Path(grid)
+    sa.a_star(grid, 0, 0, dim-1, dim-1)
+    print("Done!")
+    while not done:
+        sa.display_Maze(grid)
+else:
+    print("Failure")
+    while not done:
+        sa.display_Maze(grid)
+'''
 

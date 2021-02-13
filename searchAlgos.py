@@ -68,7 +68,7 @@ def display_Maze(grid):
                 pygame.draw.rect(screen, color, [(margin + width) * column + margin,
                                                  (margin+ height) * row + margin,
                                                  width, height])
-    clock.tick(120)
+    clock.tick(300)
     pygame.display.flip()
 
 #show path
