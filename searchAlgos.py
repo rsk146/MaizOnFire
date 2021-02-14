@@ -30,11 +30,11 @@ L_GREEN = (0, 255, 0)   #Visited
 YELLOW = (255, 255, 0)  #Fire 
 PURPLE = (255,0,255)    #Parent 
 
-pygame.init()
-size = [800, 800]
-screen = pygame.display.set_mode(size)
-pygame.display.set_caption("MaizOnFire")
-clock = pygame.time.Clock()
+# pygame.init()
+# size = [800, 800]
+# screen = pygame.display.set_mode(size)
+# pygame.display.set_caption("MaizOnFire")
+# clock = pygame.time.Clock()
 dim = int(sys.argv[1])
 height = 800/dim-4  
 width = height
@@ -42,34 +42,35 @@ margin = 4
 
 #show maze
 def display_Maze(grid):
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            sys.exit(0)
+    # for event in pygame.event.get():
+    #     if event.type == pygame.QUIT:
+    #         sys.exit(0)
 
-    for row in range(dim):
-            for column in range(dim):
+    # for row in range(dim):
+    #         for column in range(dim):
 
-                color = BLACK
-                if grid[row][column] == Status.FREE:
-                    color = WHITE
-                elif grid[row][column] == Status.PLAYER:
-                    color = BLUE
-                elif grid[row][column] == Status.GOAL:
-                    color = RED
-                elif grid[row][column] == Status.FRINGE:
-                    color = L_GREEN
-                elif grid[row][column] == Status.VISITED:
-                    color = GREEN
-                elif grid[row][column] == Status.FIRE:
-                    color = YELLOW
-                elif grid[row][column] == Status.PATH:
-                    color = PURPLE
+    #             color = BLACK
+    #             if grid[row][column] == Status.FREE:
+    #                 color = WHITE
+    #             elif grid[row][column] == Status.PLAYER:
+    #                 color = BLUE
+    #             elif grid[row][column] == Status.GOAL:
+    #                 color = RED
+    #             elif grid[row][column] == Status.FRINGE:
+    #                 color = L_GREEN
+    #             elif grid[row][column] == Status.VISITED:
+    #                 color = GREEN
+    #             elif grid[row][column] == Status.FIRE:
+    #                 color = YELLOW
+    #             elif grid[row][column] == Status.PATH:
+    #                 color = PURPLE
 
-                pygame.draw.rect(screen, color, [(margin + width) * column + margin,
-                                                 (margin+ height) * row + margin,
-                                                 width, height])
-    clock.tick(300)
-    pygame.display.flip()
+    #             pygame.draw.rect(screen, color, [(margin + width) * column + margin,
+    #                                              (margin+ height) * row + margin,
+    #                                              width, height])
+    # clock.tick(300)
+    # pygame.display.flip()
+    return
 
 #show path
 def backtrace(maze, parentGrid, startX, startY, endX, endY):
@@ -114,7 +115,8 @@ def dfs(grid, startX, startY, endX, endY):
 
         #If we've reached the goal node, then trace the path and return
         if(curX == endX and curY == endY):
-            print(backtrace(grid, parentGrid, startX, startY, endX, endY))
+            pathLen = backtrace(grid, parentGrid, startX, startY, endX, endY)
+            #print(pathLen)
             grid[startX][startY] = startStatus
             grid[endX][endY] = endStatus
             return True
@@ -147,7 +149,7 @@ def dfs(grid, startX, startY, endX, endY):
         display_Maze(grid)
     
     #If we make it here, we've went through the whole fringe and could not find path to end
-    print("Goal not reached")
+    #print("Goal not reached")
     return False
 
 def bfs(grid, startX, startY, endX, endY):
@@ -174,7 +176,8 @@ def bfs(grid, startX, startY, endX, endY):
 
         #If we've reached the goal node, then trace the path and return
         if(curX == endX and curY == endY):
-            print(backtrace(grid, parentGrid, startX, startY, endX, endY))
+            pathLen = backtrace(grid, parentGrid, startX, startY, endX, endY)
+            #print(pathLen)
             grid[startX][startY] = startStatus
             grid[endX][endY] = endStatus
             return True
@@ -240,7 +243,8 @@ def a_star(grid, startX, startY, endX, endY):
 
 
         if(curX == endX and curY == endY):
-            print(backtrace(grid, parentGrid, startX, startY, endX, endY))
+            pathLen = backtrace(grid, parentGrid, startX, startY, endX, endY)
+            #print(pathLen)
             grid[startX][startY] = startStatus
             grid[endX][endY] = endStatus
             return True
@@ -277,7 +281,7 @@ def a_star(grid, startX, startY, endX, endY):
             grid[curX][curY] = Status.VISITED
         display_Maze(grid)
     
-    print("Goal not reached")
+    #print("Goal not reached")
     return False
 
 
