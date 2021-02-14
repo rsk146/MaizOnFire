@@ -124,14 +124,14 @@ def performStrategyOne(grid):
 def performStrategyTwo(grid):
     playerX = 0
     playerY = 0
-    
-    if(not sa.a_star(grid, 0, 0, dim-1, dim -1)):
+    endDim = dim-1
+    if(not sa.a_star(grid, 0, 0, endDim, endDim)):
         print("Not possible to escape the maiz")
         return False
     
     clear_Search(grid)
 
-    while (playerX,playerY) != (dim-1, dim-1):
+    while (playerX,playerY) != (endDim, endDim):
         sa.display_Maze(grid)
         time.sleep(0.3)
         clear_Search(grid)
@@ -142,7 +142,7 @@ def performStrategyTwo(grid):
             print("Player died to fire")
             return False
         
-        if(not sa.a_star(grid, playerX, playerY, dim-1, dim-1)):
+        if(not sa.a_star(grid, playerX, playerY, endDim, endDim)):
             print("It is no longer possible to escape the maiz")
             return False
         
@@ -166,6 +166,7 @@ def path_step(grid, row, col):
                     grid[rowCheck][colCheck] = sa.Status.PLAYER
                     return (rowCheck,colCheck)
 
+    print("yoo")
     return (row,col)
 
 dim = int(sys.argv[1])

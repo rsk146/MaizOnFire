@@ -74,23 +74,21 @@ def display_Maze(grid):
 #show path
 def backtrace(maze, parentGrid, startX, startY, endX, endY):
     #Start at the goal node
-    parCoor = parentGrid[endX][endY]
-    curX = parCoor[0]
-    curY = parCoor[1]
-    count = 1
+    curX = endX
+    curY = endY
+    count = 0
     #Set the current node to be part of the path
     #Use ParentGrid to find the previously visited node
     #Set current X and Y to the parent of the node we are at
     #Keep looping this until we reach the start
     while(curX != startX or curY != startY):
         maze[curX][curY] = Status.PATH
-
         parCoor = parentGrid[curX][curY]
         curX = parCoor[0]
         curY = parCoor[1]
         count = count + 1
 
-    return count+1
+    return count
 
 
 def dfs(grid, startX, startY, endX, endY):
@@ -116,9 +114,9 @@ def dfs(grid, startX, startY, endX, endY):
 
         #If we've reached the goal node, then trace the path and return
         if(curX == endX and curY == endY):
+            print(backtrace(grid, parentGrid, startX, startY, endX, endY))
             grid[startX][startY] = startStatus
             grid[endX][endY] = endStatus
-            print(backtrace(grid, parentGrid, startX, startY, endX, endY))
             return True
         
         #Otherwise, search for next nodes to add to fringe
@@ -176,9 +174,9 @@ def bfs(grid, startX, startY, endX, endY):
 
         #If we've reached the goal node, then trace the path and return
         if(curX == endX and curY == endY):
+            print(backtrace(grid, parentGrid, startX, startY, endX, endY))
             grid[startX][startY] = startStatus
             grid[endX][endY] = endStatus
-            print(backtrace(grid, parentGrid, startX, startY, endX, endY))
             return True
         
         #Otherwise, search for next nodes to add to fringe
@@ -224,7 +222,7 @@ def a_star(grid, startX, startY, endX, endY):
     for row in range(dim):
         parentGrid.append([])
         for col in range(dim):
-            parentGrid[row].append((0,0))
+            parentGrid[row].append((startX, startY))
 
     #(current cost+heuristic, current cost, x, y)
     fringe.put((beginning, 0, startX, startY))
@@ -242,9 +240,9 @@ def a_star(grid, startX, startY, endX, endY):
 
 
         if(curX == endX and curY == endY):
+            print(backtrace(grid, parentGrid, startX, startY, endX, endY))
             grid[startX][startY] = startStatus
             grid[endX][endY] = endStatus
-            print(backtrace(grid, parentGrid, startX, startY, endX, endY))
             return True
     
         for (dirX, dirY) in directions:
@@ -281,39 +279,6 @@ def a_star(grid, startX, startY, endX, endY):
     
     print("Goal not reached")
     return False
-
-    #         if (x,y) not in closed_set:
-        
-    #             if parent is not None: 
-    #                 grid[parent[2]][parent[3]] = 5
-
-                
-    #             if(x -1 >=0 and grid[x-1][y] != 1 and (x-1, y) not in closed_set):
-    #                 h = sqrt((dim - x)**2 + (dim - y-1)**2)
-    #                 fringe.put((currentCost + 1 + h, currentCost+1, x-1, y))
-    #                 grid[x-1][y] = 4
-
-    #             if(y -1 >=0 and grid[x][y-1] != 1 and (x, y-1) not in closed_set):
-    #                 h = sqrt((dim - x - 1)**2 + (dim - y)**2)
-    #                 fringe.put((currentCost + 1 + h, currentCost+1, x, y-1))
-    #                 grid[x][y-1] = 4
-
-    #             if(x +1 < dim and grid[x+1][y] != 1 and (x+1, y) not in closed_set):
-    #                 h = sqrt((dim - 2 - x)**2 + (dim - y-1)**2)
-    #                 fringe.put((currentCost + 1 + h, currentCost+1, x+1, y))
-    #                 grid[x+1][y] = 4
-
-    #             if(y +1 < dim and grid[x][y+1] != 1) and (x, y+1) not in closed_set:
-    #                 h = sqrt((dim - x-1)**2 + (dim - y - 2)**2)
-    #                 fringe.put((currentCost + 1 + h, currentCost+1, x, y+1))
-    #                 grid[x][y+1] = 4
-
-    #             closed_set.add((x, y))
-    #             grid[x][y] = 2
-    #             parent = current
-    #     display_Maze(grid)
-    
-    # 
 
 
 
