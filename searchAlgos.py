@@ -212,10 +212,11 @@ def bfs(grid, startX, startY, endX, endY):
         grid[curX][curY] = Status.VISITED
         display_Maze(grid)
     
-    return False
+    return counter
 
 #Uses Euclidean distance as heuristic
 def a_star(grid, startX, startY, endX, endY):
+    count = 0
     startStatus = grid[startX][startY]
     endStatus = grid[endX][endY]
 
@@ -237,6 +238,7 @@ def a_star(grid, startX, startY, endX, endY):
     while not fringe.empty():
 
         current = fringe.get()
+        count+=1
         #estimatedEndCost = current[0]
         curCost = current[1]
         curX = current[2]
@@ -248,7 +250,7 @@ def a_star(grid, startX, startY, endX, endY):
             #print(pathLen)
             grid[startX][startY] = startStatus
             grid[endX][endY] = endStatus
-            return True
+            return count
     
         for (dirX, dirY) in directions:
             #Get the next node (priority determined by order of "directions")
@@ -283,7 +285,7 @@ def a_star(grid, startX, startY, endX, endY):
         display_Maze(grid)
     
     #print("Goal not reached")
-    return False
+    return count
 
 
 

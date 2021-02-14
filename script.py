@@ -185,6 +185,21 @@ def collect_dfs_data(trials):
 
     return
 
+def collect_bfs_astar_data(trials):
+    print("Showing BFS and A* Data Values with dim = " + str(dim) + ", trials = " + str(trials))
+    for prob in range(1,20):
+        p = float(prob)/20
+        diff_total = 0
+        for x in range(trials):
+            grid = generate_Maze(dim,p)
+            bfs_num_nodes_checked = sa.bfs(grid, 0,0, dim-1, dim-1)
+            astar_num_nodes_checked = sa.a_star(grid, 0,0, dim-1, dim-1)
+            if bfs_num_nodes_checked - astar_num_nodes_checked < 0:
+                print("CALL THE AMBULANCE")
+            diff_total += bfs_num_nodes_checked - astar_num_nodes_checked
+        print("P = " + str(p) + ", avg difference = " + str(diff_total/trials))
+
+
 '''def performStrategyThree(grid, fire_start):
     copyGrid = copy.deepcopy(grid)
     if a_star(copyGrid, fire_start[0], fire_start[1], ):'''
@@ -199,13 +214,14 @@ if(fireActive):
 else:
     q = 0
 
-for p in range(): 
 
 #grid = generate_Maze(dim, p)
 # if(fireActive):
 #     add_valid_fire(grid)
 
-collect_dfs_data(10000)
+#collect_dfs_data(10000)
+collect_bfs_astar_data(10)
+
 
 '''
 performStrategyTwo(grid)
