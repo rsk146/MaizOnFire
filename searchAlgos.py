@@ -156,6 +156,7 @@ def bfs(grid, startX, startY, endX, endY):
     fringe = deque()
     fringe.append((startX, startY))
     closed_set = set()
+    counter = 0
     
     parentGrid = []
     for row in range(dim):
@@ -163,12 +164,12 @@ def bfs(grid, startX, startY, endX, endY):
         for col in range(dim):
             parentGrid[row].append((0,0))
 
-    
     directions = ((0,-1), (-1,0), (1,0),(0,1))
     
     while fringe:
         #Get x,y of next node to search from our stack
         current = fringe.popleft()
+        counter +=1
         curX = current[0]
         curY = current[1]
 
@@ -177,7 +178,7 @@ def bfs(grid, startX, startY, endX, endY):
             print(backtrace(grid, parentGrid, startX, startY, endX, endY))
             grid[startX][startY] = startStatus
             grid[endX][endY] = endStatus
-            return True
+            return counter
         
         #Otherwise, search for next nodes to add to fringe
         for (dirX, dirY) in directions:

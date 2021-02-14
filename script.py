@@ -174,8 +174,6 @@ def performStrategyThree(grid, fire_start):
     copyGrid = copy.deepcopy(grid)
     if a_star(copyGrid, fire_start[0], fire_start[1], ):
 
-
-
 dim = int(sys.argv[1])
 p = float(sys.argv[2])
 
@@ -186,18 +184,20 @@ if(fireActive):
 else:
     q = 0
 
+for p in range(): 
 
 grid = generate_Maze()
 if(fireActive):
     fire_start = add_valid_fire(grid)
 
 done = False
+#performStrategyTwo(grid)
 
-performStrategyTwo(grid)
 while not done:
     sa.display_Maze(grid)
 
 #For Raky if you want to see all of the algos
+
 '''
 if sa.dfs(grid, 0,0,dim-1,dim-1):
     print("Found goal, performing bfs")
