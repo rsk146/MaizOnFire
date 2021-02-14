@@ -27,7 +27,7 @@ import copy
 ###################
 
 
-def generate_Maze():
+def generate_Maze(dim, p):
     grid = []
     for row in range(dim):
         grid.append([])
@@ -170,12 +170,27 @@ def path_step(grid, row, col):
     #print("yoo")
     return (row,col)
 
-def performStrategyThree(grid, fire_start):
+
+def collect_dfs_data(trials):
+    count = 0
+    print("Showing DFS Data Values with dim = " + str(dim) + ", trials = " + str(trials))
+    for prob in range(1, 10):
+        p = float(prob/10)
+        count = 0
+        for x in range(trials):
+            grid = generate_Maze(dim, p)
+            if(sa.dfs(grid, 0, 0, dim-1, dim-1)):
+                count+=1
+        print("P= " + str(p) + ", count = " + str(count))
+
+    return
+
+'''def performStrategyThree(grid, fire_start):
     copyGrid = copy.deepcopy(grid)
-    if a_star(copyGrid, fire_start[0], fire_start[1], ):
+    if a_star(copyGrid, fire_start[0], fire_start[1], ):'''
 
 dim = int(sys.argv[1])
-p = float(sys.argv[2])
+p2 = float(sys.argv[2])
 
 fireActive = len(sys.argv) == 4
 
@@ -186,19 +201,19 @@ else:
 
 for p in range(): 
 
-grid = generate_Maze()
-if(fireActive):
-    fire_start = add_valid_fire(grid)
+#grid = generate_Maze(dim, p)
+# if(fireActive):
+#     add_valid_fire(grid)
 
-done = False
-#performStrategyTwo(grid)
+collect_dfs_data(10000)
 
+'''
+performStrategyTwo(grid)
 while not done:
     sa.display_Maze(grid)
 
 #For Raky if you want to see all of the algos
 
-'''
 if sa.dfs(grid, 0,0,dim-1,dim-1):
     print("Found goal, performing bfs")
     sa.display_Maze(grid)
@@ -220,4 +235,3 @@ else:
     while not done:
         sa.display_Maze(grid)
 '''
-
