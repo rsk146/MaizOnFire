@@ -68,6 +68,7 @@ def add_valid_fire(grid):
         #Eventually Add check to see if there is path from fire to player!!
 
     grid[fireX][fireY] = sa.Status.FIRE
+    return (fireX, fireY)
 
 def spread_fire(grid):
     oldGrid = copy.deepcopy(grid)
@@ -166,8 +167,14 @@ def path_step(grid, row, col):
                     grid[rowCheck][colCheck] = sa.Status.PLAYER
                     return (rowCheck,colCheck)
 
-    print("yoo")
+    #print("yoo")
     return (row,col)
+
+def performStrategyThree(grid, fire_start):
+    copyGrid = copy.deepcopy(grid)
+    if a_star(copyGrid, fire_start[0], fire_start[1], ):
+
+
 
 dim = int(sys.argv[1])
 p = float(sys.argv[2])
@@ -182,7 +189,7 @@ else:
 
 grid = generate_Maze()
 if(fireActive):
-    add_valid_fire(grid)
+    fire_start = add_valid_fire(grid)
 
 done = False
 
