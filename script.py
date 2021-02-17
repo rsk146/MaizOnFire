@@ -12,6 +12,8 @@ from enum import Enum
 import time
 import copy
 
+
+
 ################## TO DO
 #
 #   WHY DOES LINE 132, 194, 259 CHECK IF NODE IN CLOSED??
@@ -54,23 +56,32 @@ def clear_Path(grid):
             if(grid[row][col] == sa.Status.PATH):
                 grid[row][col] = sa.Status.FREE
 
-def add_valid_fire(grid):
+def add_valid_fire(n, p):
     valid = False
-    
+    grid = generate_Maze(n, p)
     while not valid:
         fireX = int(random.uniform(0, dim-1))
         fireY = int(random.uniform(0, dim-1))
-
         #make sure fire not on player or exit
         if((fireX != 0 or fireY != 0) and (fireX != dim-1 or fireY !=dim-1)):
+            fireGoalPath = sa.a_star(grid, fireX, fireY, n-1, n-1)
+            clear_Path(grid)
+            clear_Search(grid)
+            grid[fireX][fireY] = sa.Status.GOAL
+            firePath = sa.a_star(grid, 0, 0, fireX, fireY)
+            if not (fireGoalPath and firePath):
+                grid = generate_Maze(n,p)
+                continue
             valid = True
-
-        #Eventually Add check to see if there is path from fire to player!!
-
+    clear_Search(grid)
+    clear_Path(grid)
     grid[fireX][fireY] = sa.Status.FIRE
-    return (fireX, fireY)
+    grid[n-1][n-1] = sa.Status.GOAL
+    print(str(fireGoalPath) + " " + str(firePath))
+    return grid, min(fireGoalPath, firePath)
 
-def spread_fire(grid):
+def spread_fire(grid, q):
+    #print(str(q))
     oldGrid = copy.deepcopy(grid)
     for row in range(dim):
         for col in range(dim):
@@ -97,58 +108,58 @@ def count_fire(oldGrid, row, col):
                     count = count + 1
     return count
 
-def performStrategyOne(grid):
+def performStrategyOne(grid, q):
     playerX = 0
     playerY = 0
     
     if(not sa.a_star(grid, 0, 0, dim-1, dim -1)):
-        print("Not possible to escape the maiz")
+        #print("Not possible to escape the maiz")
         return False
     
     clear_Search(grid)
     sa.display_Maze(grid)
-    time.sleep(0.5)
+    #time.sleep(0.5)
 
     while (playerX,playerY) != (dim-1, dim-1):
         (playerX, playerY) = path_step(grid, playerX, playerY)
-        spread_fire(grid)
+        spread_fire(grid, q)
         sa.display_Maze(grid)
         if(grid[playerX][playerY] == sa.Status.FIRE):
-            print("Player died to fire")
+            #print("Player died to fire")
             return False
         
-        time.sleep(0.3)
+        #time.sleep(0.3)
     
-    print("Player escaped the MaizOfFire")
+    #print("Player escaped the MaizOfFire")
     return True
 
-def performStrategyTwo(grid):
+def performStrategyTwo(grid, q):
     playerX = 0
     playerY = 0
     endDim = dim-1
     if(not sa.a_star(grid, 0, 0, endDim, endDim)):
-        print("Not possible to escape the maiz")
+        #print("Not possible to escape the maiz")
         return False
     
     clear_Search(grid)
 
     while (playerX,playerY) != (endDim, endDim):
         sa.display_Maze(grid)
-        time.sleep(0.3)
+        #time.sleep(0.3)
         clear_Search(grid)
         (playerX, playerY) = path_step(grid, playerX, playerY)
         clear_Path(grid)
-        spread_fire(grid)
+        spread_fire(grid,q)
         if(grid[playerX][playerY] == sa.Status.FIRE):
-            print("Player died to fire")
+            #print("Player died to fire")
             return False
         
         if(not sa.a_star(grid, playerX, playerY, endDim, endDim)):
-            print("It is no longer possible to escape the maiz")
+            #print("It is no longer possible to escape the maiz")
             return False
         
     
-    print("Player escaped the MaizOfFire")
+    #print("Player escaped the MaizOfFire")
     return True
 
 def path_step(grid, row, col):
@@ -198,8 +209,8 @@ def collect_bfs_astar_data(trials):
             clear_Search(grid)
             astar_num_nodes_checked = sa.a_star(grid, 0,0, dim-1, dim-1)
             #print("a* nodes: " + str(astar_num_nodes_checked))
-            if bfs_num_nodes_checked - astar_num_nodes_checked < 0:
-                print("CALL THE AMBULANCE")
+            #if bfs_num_nodes_checked - astar_num_nodes_checked < 0:
+            #    print("CALL THE AMBULANCE")
             diff_total += bfs_num_nodes_checked - astar_num_nodes_checked
         print("P = " + str(p) + ", avg difference = " + str(diff_total/trials))
 
@@ -209,42 +220,109 @@ def copyPath(finalGrid, pathGrid):
             if pathGrid[row][col] == sa.Status.PATH:
                 finalGrid[row][col] = sa.Status.PATH
 
-def performStrategyThree(grid, fire_start):
-    orig_q = q
-    q = 1 
+#on every path step if he reaches goal node return TRue and print success msg
+def performStrategyThree(grid, fire_start, q, dist):
     playerX = 0
     playerY = 0
+    #add check in add valid fire
+    # if not sa.a_star(grid, playerX, playerY, dim-1, dim-1):
+    #         print("Not possible to escape maiz")
+    #         return False
+    times =dist/2
     while (playerX, playerY) != (dim-1, dim-1):
-        if not sa.a_star(grid, playerX, playerY, dim-1, dim-1):
-            print("Not possible to escape maiz")
-            return False
         #this 3 might require some metric related thing lol
-        times =3
+        clear_Path(grid)
+        clear_Search(grid)
         while times > 0:
             copyGrid = copy.deepcopy(grid)
             for i in range(times):
-                spread_fire(copyGrid)
+                spread_fire(copyGrid, 1)
+            sa.display_Maze(copyGrid)
+            time.sleep(.5)    
             #add check for if this a* fails
             if not sa.a_star(copyGrid, playerX, playerY, dim-1, dim-1):
-                clear_Path(copyGrid)
-                clear_Search(copyGrid)
                 times -=1
                 if times == 0:
-                    print("Failed to find a path out")
-                    return False
+                    #run a* here on curr grid first and then return false if that doesnt work
+                    if not sa.a_star(grid, playerX, playerY, dim-1, dim-1):
+                        print("Failed to find a path out")
+                        return False
+                    else:
+                        break
             else:
                 break
-        copyPath(grid, copyGrid)
-        q = orig_q
-        for i in range(3):
+        sa.display_Maze(grid)
+        if times is 0:
             (playerX, playerY) = path_step(grid, playerX, playerY)
-            spread_fire(grid)
+            spread_fire(grid, q)
+            sa.display_Maze(grid)
             if(grid[playerX][playerY] == sa.Status.FIRE):
                 print("Player died to fire")
                 return False
+            time.sleep(.5)
+            continue
+        copyPath(grid, copyGrid)
+        #change to number of steps ahead we looked
+        for i in range(times):
+            (playerX, playerY) = path_step(grid, playerX, playerY)
+            spread_fire(grid, q)
+            sa.display_Maze(grid)
+            time.sleep(.5)
+            if(grid[playerX][playerY] == sa.Status.FIRE):
+                print("Player died to fire")
+                return False
+        clear_Search(grid)
+        clear_Path(grid)
     print("Player has exited maze")
+    time.sleep(.5)
     return True
 
+def collect_strategy_data(trials, strategy):
+    if strategy == 1:
+        print("Showing Strategy One Data with dim = " + str(dim) + ", trials per flammability = " + str(trials))
+        for prob in range(1,20):
+            q = float(prob)/20
+            successes = 0
+            for x in range(trials):
+                grid = generate_Maze(dim, p2)
+                while not sa.a_star(grid, 0, 0, dim-1, dim-1):
+                    grid = generate_Maze(dim, p2)
+                clear_Search(grid)
+                clear_Path(grid)
+                add_valid_fire(grid)
+                sa.display_Maze(grid)
+                if performStrategyOne(grid, q):
+                    successes+=1
+            print("Flammability = " + str(q) + ", avg success rate = " + str(float(successes)/trials))
+    elif strategy == 2:
+        print("Showing Strategy Two Data with dim = " + str(dim) + ", trials per flammability = " + str(trials))
+        for prob in range(1,20):
+            q = float(prob)/20
+            successes = 0
+            for x in range(trials):
+                grid = generate_Maze(dim, p2)
+                while not sa.a_star(grid, 0, 0, dim-1, dim-1):
+                    grid = generate_Maze(dim, p2)
+                clear_Path(grid)
+                clear_Search(grid)
+                add_valid_fire(grid)
+                sa.display_Maze(grid)
+                if performStrategyTwo(grid, q):
+                    successes+=1
+            print("Flammability = " + str(q) + ", avg success rate = " + str(float(successes)/trials))
+    elif strategy == 3:
+        print("Showing Strategy Three Data with dim = " + str(dim) + ", trials per flammability = " + str(trials))
+        for prob in range(1,20):
+            q = float(prob)/20
+            successes = 0
+            for x in range(trials):
+                grid = generate_Maze(dim, p2)
+                if performStrategyThree(grid):
+                    successes+=1
+            print("Flammability = " + str(q) + ", avg success rate = " + str(float(successes)/trials))
+    else:
+        print("Non valid strategy")
+        return
 
     
 
@@ -254,15 +332,20 @@ p2 = float(sys.argv[2])
 fireActive = len(sys.argv) == 4
 
 if(fireActive):
-    q = float(sys.argv[3])
+    q2 = float(sys.argv[3])
 else:
-    q = 0
+    q2 = 0
 
 
-#grid = generate_Maze(dim, p)
-# if(fireActive):
-#     add_valid_fire(grid)
+if(fireActive):
+    grid, minDist = add_valid_fire(dim, p2)
+    performStrategyThree(grid, None, q2, minDist)
 
+#collect_strategy_data(10, 2)
+
+
+
+#performStrategyOne(grid)
 #collect_dfs_data(10000)
 #collect_bfs_astar_data(1000)
 '''
