@@ -311,8 +311,3 @@ def a_star(grid, startX, startY, endX, endY):
     return count
     #return 0
 
-
-#???????????? what thr fuck
-def uselessfunction():
-    return
-
