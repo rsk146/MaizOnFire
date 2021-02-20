@@ -11,15 +11,13 @@ from enum import Enum
 import time
 import copy
 import matplotlib.pyplot as plt
+import searchAlgos as sa
 
-##############Contributions: 
+##############Contributions################# 
 # R above function indicates rsk146 majority contribution
 # K above function indicates kjp189 majority contribution
 # R/K or K/R indicates both wrote or edited it together and no individual can take majority credit
 
-################## TO DO
-#   Report
-###################
 
 #R
 #Generates a 2d array representation of a maze of dimension dim x dim 
@@ -446,3 +444,9 @@ else:
     time.sleep(10)
 '''
 
+grid = generate_Maze(100, 0)
+dim =100
+print(sa.bfs(grid, 0,0, 99, 99))
+clear_Path(grid)
+clear_Search(grid)
+#print(sa.a_star(grid, 0, 0, 99, 99))
