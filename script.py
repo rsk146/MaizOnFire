@@ -425,7 +425,9 @@ def genGraphs(graph):
 #main  area used to run the different functions for different purposes
 #usually take in command line arguments to do different things as the following commented code shows
 
-'''if(len(sys.argv) == 2):
+'''
+#Example One (of main)
+if(len(sys.argv) == 2):
     genGraphs(int(sys.argv[1]))
 else:
     import searchAlgos as sa
@@ -444,9 +446,13 @@ else:
     time.sleep(10)
 '''
 
-grid = generate_Maze(100, 0)
-dim =100
-print(sa.bfs(grid, 0,0, 99, 99))
-clear_Path(grid)
-clear_Search(grid)
-#print(sa.a_star(grid, 0, 0, 99, 99))
+# #Example Two (of main)
+# dim = int(sys.argv[1])
+# p2 = float(sys.argv[2])
+# grid = generate_Maze(dim, p2)
+# print(sa.bfs(grid, 0,0, dim-1, dim-1))
+# #clear_Path(grid)
+# #clear_Search(grid)
+# #print(sa.a_star(grid, 0, 0, dim-1, dim-1))
+# while True:
+#     sa.display_Maze(grid)
